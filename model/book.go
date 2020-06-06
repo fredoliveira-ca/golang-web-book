@@ -1,6 +1,9 @@
 package model
 
-import "book-service/db"
+import (
+	"book-service/db"
+	"github.com/google/uuid"
+)
 
 type Book struct {
 	ID		string
@@ -42,3 +45,16 @@ func FetchAll() [] Book {
 	return books
 }
 
+func CreateNewBook(title, author string, price float64) {
+	db := db.ConnectDataBase()
+	id := uuid.Must(uuid.NewRandom())
+	sql := "INSERT INTO book(id, title, author, price) VALUES($1, $2, $3, $4);"
+	insertion, err := db.Prepare(sql)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	insertion.Exec(id, title, author, price)
+	defer db.Close()
+}
