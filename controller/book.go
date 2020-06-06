@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 	"net/http"
@@ -16,7 +17,7 @@ func FetchData(w http.ResponseWriter, req *http.Request) {
 	templates.ExecuteTemplate(w, "Index", books)
 }
 
-func NewBook(w http.ResponseWriter, req *http.Request) {
+func Create(w http.ResponseWriter, req *http.Request) {
 	templates.ExecuteTemplate(w, "NewBook", nil)
 }
 
@@ -43,4 +44,11 @@ func Delete(w http.ResponseWriter, req *http.Request) {
 	model.DeleteBook(id)
 
 	http.Redirect(w, req, "/", 301)
+}
+
+func Edit(w http.ResponseWriter, req *http.Request) {
+	id := req.URL.Query().Get("id")
+	book := model.FingOne(id)
+	fmt.Println(book)
+	templates.ExecuteTemplate(w, "EditBook", book)
 }

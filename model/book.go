@@ -72,3 +72,45 @@ func DeleteBook(id string) {
 	deletion.Exec(id)
 	defer db.Close()
 }
+
+func FingOne(id string) (Book) {
+	db := db.ConnectDataBase()
+	sql := "SELECT * FROM book WHERE id=$1;"
+	selection, err := db.Query(sql, id)
+	
+	if err != nil {
+		panic(err.Error())
+	}
+
+	book := Book{}
+	for selection.Next() {
+		var id, title, author string
+		var price float64
+
+		err = selection.Scan(&id, &title, &author, &price)
+		if err != nil {
+			panic(err.Error())
+		}
+
+		book.ID = id
+		book.Title = title
+		book.Author = author
+		book.Price = price
+	}
+
+	defer db.Close()
+	return book
+}
+
+func Edit(id string) {
+	db := db.ConnectDataBase()
+	sql := "DELETE FROM book WHERE id=$1;"
+	deletion, err := db.Prepare(sql)
+	
+	if err != nil {
+		panic(err.Error())
+	}
+
+	deletion.Exec(id)
+	defer db.Close()
+}
