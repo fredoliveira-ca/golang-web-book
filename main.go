@@ -2,20 +2,13 @@ package main
 
 import (
 	"net/http"
-	"html/template"
-	"book-service/model"
+	"book-service/route"
 	_ "github.com/lib/pq"
 )
 
-var templates = template.Must(template.ParseGlob("templates/*.html")) 
-
-func main() {
-	http.HandleFunc("/", fetchData)
+func main() {	
+	route.LoadRoutes()
 	http.ListenAndServe(":8080", nil)
 }
 
-func fetchData(w http.ResponseWriter, req *http.Request) {
-	books := model.FetchAll()
-	templates.ExecuteTemplate(w, "Index", books)
-}
 
