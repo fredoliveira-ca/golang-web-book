@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"log"
 	"strconv"
 	"net/http"
@@ -23,7 +22,6 @@ func NewBook(w http.ResponseWriter, req *http.Request) {
 
 func Insert(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "POST" {
-		fmt.Println(req.FormValue("title"))
 		title := req.FormValue("title")
 		author := req.FormValue("author")
 		price, err := strconv.ParseFloat(req.FormValue("price"), 64)
