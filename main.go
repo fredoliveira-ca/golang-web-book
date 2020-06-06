@@ -1,9 +1,20 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"html/template"
+	"database/sql"
+	_ "github.com/lib/pq"
 )
+
+const (
+	host     = "localhost"
+	port     = 5432
+	user     = "postgres"
+	password = "admin"
+	dbname   = "postgres"
+  )
 
 type Book struct {
 	Title string
@@ -14,17 +25,50 @@ type Book struct {
 var templates = template.Must(template.ParseGlob("templates/*.html")) 
 
 func main() {
-	http.HandleFunc("/", index)
+	http.HandleFunc("/", fetchData)
 	http.ListenAndServe(":8080", nil)
 }
 
-func index(w http.ResponseWriter, req *http.Request) {
-	books := [] Book {
-		{ Title: "SOLID", Author: "Uncle Bob", Price: 23.2 },
-		{"Clean Code", "Uncle Bob", 32.3},
-		{"Building Microservices: Designing Fine-Grained Systems", "Sam Newma", 32.3},
-		{"Structure and Interpretation of Computer Programs", "Gerald Jay Sussman and Hal Abelson", 32.3},
+func fetchData(w http.ResponseWriter, req *http.Request) {
+	db := connectDataBase()
+
+	records, err := db.Query("select * from book")
+
+	if err != nil {
+		panic(err)
+	}
+
+	book := Book{}
+	books := [] Book{}
+
+	for records.Next() {
+		var id, title, author string
+		var price float64
+
+		err = records.Scan(&id, &title, &author, &price)
+		if err != nil {
+			panic(err.Error())
+		}
+
+		book.Title = title
+		book.Author = author
+		book.Price = price
+
+		books = append(books, book)
 	}
 
 	templates.ExecuteTemplate(w, "Index", books)
+
+	defer db.Close()
+}
+
+func connectDataBase() *sql.DB {
+	connection := fmt.Sprintf("host=%s port=%d user=%s  password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	
+	db, err := sql.Open("postgres", connection)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return db
 }
