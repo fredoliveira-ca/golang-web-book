@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"log"
 	"strconv"
 	"net/http"
@@ -49,6 +48,22 @@ func Delete(w http.ResponseWriter, req *http.Request) {
 func Edit(w http.ResponseWriter, req *http.Request) {
 	id := req.URL.Query().Get("id")
 	book := model.FingOne(id)
-	fmt.Println(book)
 	templates.ExecuteTemplate(w, "EditBook", book)
+}
+
+func Update(w http.ResponseWriter, req *http.Request) {
+	if req.Method == "POST" {
+		id := req.FormValue("id")
+		title := req.FormValue("title")
+		author := req.FormValue("author")
+		price, err := strconv.ParseFloat(req.FormValue("price"), 64)
+
+		if err != nil {
+			log.Println("Error while trying parse price value.")
+		}
+
+		model.UpdateBook(id, title, author, price)
+	}
+
+	http.Redirect(w, req, "/", 301)
 }

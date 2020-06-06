@@ -102,15 +102,15 @@ func FingOne(id string) (Book) {
 	return book
 }
 
-func Edit(id string) {
+func UpdateBook(id, title, author string, price float64) {
 	db := db.ConnectDataBase()
-	sql := "DELETE FROM book WHERE id=$1;"
-	deletion, err := db.Prepare(sql)
+	sql := "UPDATE book SET title=$2, author=$3, price=$4 WHERE id=$1;"
+	updating, err := db.Prepare(sql)
 	
 	if err != nil {
 		panic(err.Error())
 	}
 
-	deletion.Exec(id)
+	updating.Exec(id, title, author, price)
 	defer db.Close()
 }
