@@ -33,6 +33,7 @@ func FetchAll() [] Book {
 			panic(err.Error())
 		}
 
+		book.ID = id
 		book.Title = title
 		book.Author = author
 		book.Price = price
@@ -56,5 +57,18 @@ func CreateNewBook(title, author string, price float64) {
 	}
 
 	insertion.Exec(id, title, author, price)
+	defer db.Close()
+}
+
+func DeleteBook(id string) {
+	db := db.ConnectDataBase()
+	sql := "DELETE FROM book WHERE id=$1;"
+	deletion, err := db.Prepare(sql)
+	
+	if err != nil {
+		panic(err.Error())
+	}
+
+	deletion.Exec(id)
 	defer db.Close()
 }

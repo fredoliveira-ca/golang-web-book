@@ -22,7 +22,6 @@ func NewBook(w http.ResponseWriter, req *http.Request) {
 }
 
 func Insert(w http.ResponseWriter, req *http.Request) {
-	fmt.Println(req)
 	if req.Method == "POST" {
 		fmt.Println(req.FormValue("title"))
 		title := req.FormValue("title")
@@ -36,6 +35,14 @@ func Insert(w http.ResponseWriter, req *http.Request) {
 		model.CreateNewBook(title, author, price)
 		
 	}
+
+	http.Redirect(w, req, "/", 301)
+}
+
+func Delete(w http.ResponseWriter, req *http.Request) {
+	id := req.URL.Query().Get("id")
+
+	model.DeleteBook(id)
 
 	http.Redirect(w, req, "/", 301)
 }
