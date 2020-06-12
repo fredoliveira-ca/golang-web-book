@@ -2,7 +2,8 @@ package route
 
 import (
 	"net/http"
-	"book-service/controller"
+
+	"github.com/fredoliveira-ca/book-service/controller"
 )
 
 func LoadRoutes() {

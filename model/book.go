@@ -1,18 +1,19 @@
 package model
 
 import (
-	"book-service/db"
 	"github.com/google/uuid"
+
+	"github.com/fredoliveira-ca/book-service/db"
 )
 
 type Book struct {
-	ID		string
-	Title 	string
-	Author 	string
-	Price 	float64
+	ID     string
+	Title  string
+	Author string
+	Price  float64
 }
 
-func FetchAll() [] Book {
+func FetchAll() []Book {
 	db := db.ConnectDataBase()
 
 	records, err := db.Query("select * from book")
@@ -22,7 +23,7 @@ func FetchAll() [] Book {
 	}
 
 	book := Book{}
-	books := [] Book{}
+	books := []Book{}
 
 	for records.Next() {
 		var id, title, author string
@@ -64,7 +65,7 @@ func DeleteBook(id string) {
 	db := db.ConnectDataBase()
 	sql := "DELETE FROM book WHERE id=$1;"
 	deletion, err := db.Prepare(sql)
-	
+
 	if err != nil {
 		panic(err.Error())
 	}
@@ -73,11 +74,11 @@ func DeleteBook(id string) {
 	defer db.Close()
 }
 
-func FingOne(id string) (Book) {
+func FindOne(id string) Book {
 	db := db.ConnectDataBase()
 	sql := "SELECT * FROM book WHERE id=$1;"
 	selection, err := db.Query(sql, id)
-	
+
 	if err != nil {
 		panic(err.Error())
 	}
@@ -106,7 +107,7 @@ func UpdateBook(id, title, author string, price float64) {
 	db := db.ConnectDataBase()
 	sql := "UPDATE book SET title=$2, author=$3, price=$4 WHERE id=$1;"
 	updating, err := db.Prepare(sql)
-	
+
 	if err != nil {
 		panic(err.Error())
 	}
