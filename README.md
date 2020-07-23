@@ -1,4 +1,4 @@
-# golang-web-book
+# Golang Web Book
 
 ## How to run
 

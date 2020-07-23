@@ -17,10 +17,10 @@ func FetchAll() []Book {
 	db := db.ConnectDataBase()
 
 	records, err := db.Query("select * from book")
-
 	if err != nil {
 		panic(err)
 	}
+	defer records.Close()
 
 	book := Book{}
 	books := []Book{}
@@ -51,13 +51,20 @@ func CreateNewBook(title, author string, price float64) {
 	db := db.ConnectDataBase()
 	id := uuid.Must(uuid.NewRandom())
 	sql := "INSERT INTO book(id, title, author, price) VALUES($1, $2, $3, $4);"
-	insertion, err := db.Prepare(sql)
 
+	tx, _ := db.Begin()
+	insertion, err := tx.Prepare(sql)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	insertion.Exec(id, title, author, price)
+	_, err = insertion.Exec(id, title, author, price)
+	if err != nil {
+		tx.Rollback()
+		panic(err.Error())
+	}
+	tx.Commit()
+
 	defer db.Close()
 }
 
